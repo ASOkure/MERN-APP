@@ -2,8 +2,11 @@ import path from "path";
 import express from "express";
 import devBundle from "./devBundle";
 import template from "./../template";
-import { MongoClient } from "mongodb";
-const app = express();
+//import { MongoClient } from "mongodb";
+import app from "./express";
+import mongoose from "mongoose";
+import config from "./../config/config";
+
 devBundle.compile(app);
 const CURRENT_WORKING_DIR = process.cwd();
 app.use("/dist", express.static(path.join(CURRENT_WORKING_DIR, "dist")));
@@ -20,9 +23,16 @@ app.listen(port, function onStart(err) {
   console.info("Server started on port %s.", port);
 });
 
-const url =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/mernSimpleSetup";
-MongoClient.connect(url, (err, db) => {
-  console.log("Connected successfully to mongodb server");
-  db.close();
+//const url =
+//process.env.MONGODB_URI || "mongodb://localhost:27017/mernSimpleSetup";
+//MongoClient.connect(url, (err, db) => {
+//console.log("Connected successfully to mongodb server");
+//db.close();
+//});
+
+mongoose.Promise = global.Promise;
+mongoose.connect(config.mongoUri);
+
+mongoose.connection.on("error", () => {
+  throw new Error(`unable to connect to database: ${mongoUri}`);
 });
